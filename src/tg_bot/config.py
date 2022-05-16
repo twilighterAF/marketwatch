@@ -9,4 +9,3 @@ def bot_token():
 def client_id():
     self_id = getenv('CLIENT_ID')
     return int(self_id)
-

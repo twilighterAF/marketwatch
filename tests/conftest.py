@@ -1,4 +1,6 @@
+import os
 import pytest
+import dotenv
 from tests import market_test, analitics_test, alert_test, support_test, CSV_TESTDIR
 
 

@@ -3,6 +3,7 @@ import pandas
 from binance import Client
 from .config import api_key, secret_key
 
+
 client = Client(api_key(), secret_key())
 
 
