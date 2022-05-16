@@ -7,6 +7,7 @@ Script iterates through pairs you added(BTCUSDT by default), if limits passed(se
 Alert can be sent only once in day for each pair, daily update csv and alerts reset in 03.03 a.m.
 
 Commands
+
 /start - start bot and keyboard show
 
 /alert - start alert watching(needs to realert after bot restart)
