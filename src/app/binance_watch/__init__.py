@@ -3,7 +3,7 @@ import time
 from .binance_api import Market
 from .analysis import Analysis
 from .alerts import Alert
-from .pairs_support import Support
+from .utils import Support
 from src.logger import get_logger
 
 

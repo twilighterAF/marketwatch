@@ -64,13 +64,13 @@ def test_cant_read_history():
 
 
 def test_create_csv(mocker):
-    mocker.patch('src.app.binance_watch.pairs_support.Support.create_csv')
+    mocker.patch('tests.support_test.create_csv')
     support_test.create_csv('BTCUSDT', 'history', CSV_TESTDIR)
     support_test.create_csv.assert_called_once_with('BTCUSDT', 'history', CSV_TESTDIR)
 
 
 def test_del_csv(mocker):
-    mocker.patch('src.app.binance_watch.pairs_support.Support.del_csv')
+    mocker.patch('tests.support_test.del_csv')
     support_test.del_csv('BTCUSDT', CSV_TESTDIR)
     support_test.del_csv.assert_called_once_with('BTCUSDT', CSV_TESTDIR)
 
