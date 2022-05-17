@@ -7,7 +7,7 @@ from src.logger import get_logger
 
 
 logger = get_logger(__name__)
-bot = telebot.TeleBot(bot_token()) if all((bot_token(), client_id())) else AttributeError
+bot = telebot.TeleBot(bot_token())
 
 
 @bot.message_handler(commands=['start'])
