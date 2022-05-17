@@ -12,9 +12,10 @@ Commands
 
 /alert - start alert watching(needs to realert after bot restart)
 
-![image](https://user-images.githubusercontent.com/59505313/168646417-eb986d55-999f-4da4-b060-125e4040ba7f.png)
 
-For start you need to setup os.environments in root dir in .env file.
 
-Binance keys are not neccessary for this version by now, only BOT_TOKEN and CLIENT_ID (yourself tg id) required
+For start bot you just need to follow next few steps:
 
+1) git clone repository
+2) pip install -r requirements.txt
+3) set up  environment.env file in marketwatch dir (Binance keys are not neccessary for this version by now, only BOT_TOKEN and CLIENT_ID (yourself tg id) required)
