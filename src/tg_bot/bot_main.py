@@ -140,9 +140,10 @@ def report_output(data: dict) -> str:
 
 
 def bot_run():
-    try:
-        logger.info('Start bot')
-        bot.polling(none_stop=True)
-    except Exception as e:
-        logger.exception(f'Bot exception {e}')
-        raise e
+    while True:
+        try:
+            logger.info('Start bot')
+            bot.polling(none_stop=True)
+        except Exception as e:
+            logger.exception(f'Bot exception {e}')
+            raise e
