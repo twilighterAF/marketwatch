@@ -122,10 +122,6 @@ def report_output(data: dict) -> str:
         f"volume from avg: {report['report'][90]['volume'][0]}%\n" \
         f"volume from max: {report['report'][90]['volume'][1]}%\n" \
         f"price from avg: {report['report'][90]['price']}%\n" \
-        "360 DAYS\n" \
-        f"volume from avg: {report['report'][360]['volume'][0]}%\n" \
-        f"volume from max: {report['report'][360]['volume'][1]}%\n" \
-        f"price from avg: {report['report'][360]['price']}%\n" \
         "ORDER BOOK\n" \
         "Bids | Asks\n" \
         f"sum bid: {report['orders']['bids']['sum']} | sum ask: {report['orders']['asks']['sum']}\n" \
@@ -140,10 +136,9 @@ def report_output(data: dict) -> str:
 
 
 def bot_run():
-    while True:
-        try:
-            logger.info('Start bot')
-            bot.polling(none_stop=True)
-        except Exception as e:
-            logger.exception(f'Bot exception {e}')
-            raise e
+    try:
+        logger.info('Start bot')
+        bot.infinity_polling(timeout=60)
+    except Exception as e:
+        logger.exception(f'Bot exception {e}')
+
