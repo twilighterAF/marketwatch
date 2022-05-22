@@ -141,4 +141,5 @@ def bot_run():
         bot.infinity_polling(timeout=60)
     except Exception as e:
         logger.exception(f'Bot exception {e}')
+        raise e
 
