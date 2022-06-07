@@ -51,6 +51,7 @@ def callback_pairs(call: types.CallbackQuery):
 
 @bot.message_handler(commands=['alert'])
 def alerting(message: types.Message):
+    bot.send_message(message.chat.id, 'start alerting')
     while True:
         alert_status = alert.alert_status(analytics.get_data())
         alert_watch = alert.alert_watch(support.get_current_pair(), alert_status)

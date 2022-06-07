@@ -38,8 +38,8 @@ class Support:
                 else:
                     return False
 
-    @classmethod
-    def read_history(cls, pair: str, path: str) -> pandas.DataFrame:
+    @staticmethod
+    def read_history(pair: str, path: str) -> pandas.DataFrame:
         try:
             with open(os.path.join(path, f'{pair}.csv')) as file:
                 history = pandas.read_csv(file)
@@ -48,11 +48,11 @@ class Support:
             time.sleep(1)
             raise e
 
-    @classmethod
-    def create_csv(cls, pair: str, history: pandas.DataFrame, path: str):
+    @staticmethod
+    def create_csv(pair: str, history: pandas.DataFrame, path: str):
         csv_file = f'{pair}.csv'
         history.to_csv(os.path.join(path, csv_file))
 
-    @classmethod
-    def del_csv(cls, pair: str, path: str):
+    @staticmethod
+    def del_csv(pair: str, path: str):
         os.remove(os.path.join(path, f'{pair}.csv'))

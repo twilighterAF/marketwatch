@@ -21,8 +21,8 @@ class Alert:
         for pair in pair_pool.keys():
             self.alert_off(pair)
 
-    @classmethod
-    def alert_status(cls, data: dict) -> bool:
+    @staticmethod
+    def alert_status(data: dict) -> bool:
         week, month = data[7], data[30]
         alert = False
         if week['volume'][0] > 150 and (week['price'] > 135 or week['price'] < 65):

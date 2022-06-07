@@ -47,8 +47,8 @@ class Analysis:
             result[date_slice] = {'volume': (calculations[0], calculations[1]), 'price': calculations[2]}
             self.set_data(result)
 
-    @classmethod
-    def calc_trades(cls, last_trades: pandas.DataFrame) -> dict:
+    @staticmethod
+    def calc_trades(last_trades: pandas.DataFrame) -> dict:
         prices, qty = last_trades['price'].apply(float), last_trades['qty'].apply(float)
         summary = round(sum(qty), 4)
         maximum = max(prices), max(qty)
@@ -59,8 +59,8 @@ class Analysis:
                   'max_qty': maximum[1], 'avg_qty': average[1], 'sum_qty': summary}
         return result
 
-    @classmethod
-    def calc_orders(cls, order_book: dict) -> dict:
+    @staticmethod
+    def calc_orders(order_book: dict) -> dict:
         result = {}
         for makers, orders in order_book.items():
             qty_orders = orders['qty'].apply(float)
