@@ -31,7 +31,6 @@ def setup_loop():
 
 def event_loop(pair: str):
     support.set_current_pair(pair)
-    logger.info(f'Pair: {support.get_current_pair()}')
     market.set_ticker(market.api_get_ticker(pair))
     history = support.read_history(pair, CSV_DIR)
     analytics.calc_history(history)
