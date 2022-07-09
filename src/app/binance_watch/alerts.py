@@ -25,15 +25,20 @@ class Alert:
     def alert_status(data: dict) -> bool:
         week, month = data[7], data[30]
         alert = False
-        if week['volume'][0] > 150 and (week['price'] > 135 or week['price'] < 65):
+
+        if week['volume'][0] > 140 and (week['price'] > 125 or week['price'] < 75):
             alert = True
+
         elif month['volume'][0] > 125 or month['price'] > 125 or month['price'] < 75:
             alert = True
+
         return alert
 
     def alert_watch(self, pair: str, alert_status: bool) -> bool:
         alert = False
+
         if alert_status and not self.get_alert(pair):
             self.alert_on(pair)
             alert = True
+
         return alert

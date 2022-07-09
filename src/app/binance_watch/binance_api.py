@@ -1,5 +1,6 @@
 import os
 import pandas
+import datetime
 from binance import Client
 from .config import api_key, secret_key
 
@@ -12,7 +13,7 @@ class Market:
 
     def __init__(self):
         self._ticker = {}
-        self._all_pairs = []
+        self._all_pairs = []  # all pairs in binance
         self._order_book = {}
         self._last_trades = pandas.DataFrame
 
@@ -46,9 +47,13 @@ class Market:
 
     @staticmethod
     def api_get_history(pair: str) -> pandas.DataFrame:
-        market = client.get_historical_klines(f"{pair}", Client.KLINE_INTERVAL_1DAY, '1 Jan, 2015')
+        history_date = datetime.date.today() - datetime.timedelta(days=95)
+        market = client.get_historical_klines(f"{pair}", Client.KLINE_INTERVAL_1DAY,
+                                              datetime.datetime.strftime(history_date, '%d %b, %Y'))
+
         for line in market:
             del line[9:]
+
         result = pandas.DataFrame(market, columns=['open_time', 'open', 'high', 'low', 'close', 'volume',
                                                    'close_time', 'quote_asset_vol', 'trades'])
         result.set_index('open_time', inplace=True)

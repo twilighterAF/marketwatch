@@ -8,6 +8,7 @@ from src.logger import get_logger
 
 
 CSV_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'historical_data')
+UPDATE_TIME = {'hour': 3, 'min': 30, 'sec': 10}  # 10 sec is enough for 4 pairs to update
 market = Market()
 analytics = Analysis()
 alert = Alert()
@@ -18,10 +19,12 @@ logger = get_logger(__name__)
 def setup_loop():
     logger.info('Start loop')
     files = support.find_csv(CSV_DIR)
+
     if not files:
         default_pair = 'BTCUSDT'
         support.create_csv(default_pair, market.api_get_history(default_pair), CSV_DIR)
         support.set_pair(default_pair)
+
     alert.init_alerts(support.get_pair_pool())
     market.set_all_pairs(market.api_get_all_pairs())
 
@@ -32,11 +35,11 @@ def event_loop(pair: str):
     market.set_ticker(market.api_get_ticker(pair))
     history = support.read_history(pair, CSV_DIR)
     analytics.calc_history(history)
-    analytics.calc_result(market.get_ticker())
+    analytics.calc_result(pair, market.get_ticker())
 
 
 def daily_update(pair: str):
-    logger.info('Daily update')
+    logger.warning('Daily update')
     market.clear_all_pairs()
     market.set_all_pairs(market.api_get_all_pairs())
     support.create_csv(pair, market.api_get_history(pair), CSV_DIR)
@@ -55,15 +58,23 @@ def binance_watch():
     """Event loop"""
     setup_loop()
     nanosec = 1000
+
     while True:
         try:
             iter_list = list(support.get_pair_pool())
+
             for pair in iter_list:
                 event_loop(pair)
                 binance_time = time.localtime(float(market.get_ticker()['closeTime']) // nanosec)
-                if binance_time[3] == 3 and binance_time[4] == 30:  # 03:30 a.m. daily update
+                time_conditions = (binance_time[3] == UPDATE_TIME['hour'],
+                                   binance_time[4] == UPDATE_TIME['min'],
+                                   binance_time[5] <= UPDATE_TIME['sec'])
+
+                if all(time_conditions):  # 03:30 a.m. daily update
                     daily_update(pair)
+
                 time.sleep(1)
+
         except Exception as e:
             logger.exception(f'Event loop exception {e}')
             time.sleep(1)

@@ -30,13 +30,17 @@ class Support:
 
     def find_csv(self, path: str) -> bool:
         for file in os.walk(path):
+
             for csv_file in file[2]:
+
                 if csv_file.find('csv') != -1:
                     pair = csv_file.split('.')[0]
                     self.set_pair(pair)
-                    return True
+
                 else:
                     return False
+
+            return True
 
     @staticmethod
     def read_history(pair: str, path: str) -> pandas.DataFrame:
@@ -44,6 +48,7 @@ class Support:
             with open(os.path.join(path, f'{pair}.csv')) as file:
                 history = pandas.read_csv(file)
                 return history
+
         except Exception as e:
             time.sleep(1)
             raise e
