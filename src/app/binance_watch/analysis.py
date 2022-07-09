@@ -81,5 +81,4 @@ class Analysis:
     def full_report(self, order_book: tuple, last_trades: pandas.DataFrame) -> dict:
         trades, orders = self.calc_trades(last_trades), self.calc_orders(order_book)
         result = {'trades': trades, 'orders': orders, 'report': self.get_data()}
-        print(result)
         return result
