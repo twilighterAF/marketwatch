@@ -30,6 +30,9 @@ def main_menu(message: types.Message):
         bot.send_message(message.chat.id, 'Pairs\n' + '\n'.join(map(str, support.get_pair_pool().values())))
         bot.send_message(message.chat.id, 'What we will doing?', reply_markup=add_pairs_keyboard())
 
+    elif message.text == '/alert':
+        alerting(message)
+
 
 @bot.message_handler(content_types=['text'])
 def check_market(message: types.Message):
@@ -37,7 +40,7 @@ def check_market(message: types.Message):
 
     if message.text in support.get_pair_pool().keys():
         report = report_output(send_report(message.text))
-        bot.send_message(message.chat.id, f'{report}')
+        bot.send_message(message.chat.id, report)
 
     else:
         bot.send_message(message.chat.id, 'Wrong pair')
@@ -54,19 +57,24 @@ def callback_pairs(call: types.CallbackQuery):
         bot.register_next_step_handler(msg, del_pair)
 
 
-@bot.message_handler(commands=['alert'])
+@bot.message_handler(content_types=['text'])
 def alerting(message: types.Message):
-    bot.send_message(message.chat.id, 'start alerting')
+    if not alert.get_alertwatch():
+        bot.send_message(message.chat.id, 'Start alerting')
+        alert.set_alertwatch(status=True)
 
-    while True:
-        alert_status = alert.alert_status(analytics.get_data())
-        alert_watch = alert.alert_watch(support.get_current_pair(), alert_status)
+        while True:
+            pair = support.get_current_pair()
+            alert_status = alert.alert_status(pair, analytics.get_data())
+            alert_watch = alert.alert_watch(pair, alert_status)
 
-        if alert_watch:
-            report = report_output(send_report(message.text))
-            bot.send_message(message.chat.id, f'Alert {support.get_current_pair()}\n{report}')
+            if alert_watch:
+                report = report_output(send_report(pair))
+                bot.send_message(message.chat.id, f'ALERT ❗️ \n{report}')
 
-        time.sleep(1)
+            time.sleep(1)
+    else:
+        bot.send_message(message.chat.id, 'Already watching')
 
 
 @bot.message_handler(content_types=['text'])

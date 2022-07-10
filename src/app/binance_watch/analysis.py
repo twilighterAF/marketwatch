@@ -47,7 +47,9 @@ class Analysis:
             volume_from_max = ((volume_on / volume_hstr[0]) * percent)
             price_change = ((avg_price_on / avg_price_hstr) * percent)
 
-            calculations = list(map(round, map(float, (volume_change, volume_from_max, price_change, avg_price_on))))
+            calculations = list(map(round, map(float,
+                                               (volume_change, volume_from_max, price_change, avg_price_on))))
+
             result[date_slice] = {'volume': (calculations[0], calculations[1]),
                                   'price': calculations[2], 'price_online': calculations[3]}
             self.set_data(pair, result)

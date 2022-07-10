@@ -48,7 +48,7 @@ class Market:
     @staticmethod
     def api_get_history(pair: str) -> pandas.DataFrame:
         history_date = datetime.date.today() - datetime.timedelta(days=95)
-        market = client.get_historical_klines(f"{pair}", Client.KLINE_INTERVAL_1DAY,
+        market = client.get_historical_klines(pair, Client.KLINE_INTERVAL_1DAY,
                                               datetime.datetime.strftime(history_date, '%d %b, %Y'))
 
         for line in market:
@@ -61,12 +61,12 @@ class Market:
 
     @staticmethod
     def api_get_ticker(pair: str) -> dict:
-        result = client.get_ticker(symbol=f'{pair}')
+        result = client.get_ticker(symbol=pair)
         return result
 
     @staticmethod
     def api_get_order_book(pair: str) -> dict:
-        order_book = client.get_order_book(symbol=f'{pair}', limit=500)
+        order_book = client.get_order_book(symbol=pair, limit=500)
         bid_df = pandas.DataFrame(order_book['bids'], columns=['price', 'qty'])
         ask_df = pandas.DataFrame(order_book['asks'], columns=['price', 'qty'])
         result = {'bids': bid_df, 'asks': ask_df}
@@ -74,7 +74,7 @@ class Market:
 
     @staticmethod
     def api_get_trades(pair: str) -> pandas.DataFrame:
-        market = client.get_recent_trades(symbol=f'{pair}')  # last 500 trades
+        market = client.get_recent_trades(symbol=pair)  # last 500 trades
         result = pandas.DataFrame(market, columns=['id', 'price', 'qty', 'quoteQty', 'time',
                                                    'isBuyerMaker', 'isBestMatch'])
         return result

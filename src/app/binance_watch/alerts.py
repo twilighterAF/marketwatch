@@ -4,6 +4,7 @@ class Alert:
 
     def __init__(self):
         self._alerts = {}  # alerts dict because bot alerting is an infinite loop
+        self._alertwatch = False  # alert status because the same
 
     def alert_off(self, pair: str):
         self._alerts[pair] = False
@@ -21,16 +22,22 @@ class Alert:
         for pair in pair_pool.keys():
             self.alert_off(pair)
 
+    def get_alertwatch(self) -> bool:
+        return self._alertwatch
+
+    def set_alertwatch(self, status=True):
+        self._alertwatch = status
+
     @staticmethod
-    def alert_status(data: dict) -> bool:
-        week, month = data[7], data[30]
-        alert = False
+    def alert_status(pair: str, data: dict) -> bool:
+        """Alerts config"""
+        week, month = data[pair][7], data[pair][30]
 
-        if week['volume'][0] > 140 and (week['price'] > 125 or week['price'] < 75):
-            alert = True
+        volume_alert = week['volume'][0] > 140 or month['volume'][0] > 175
+        price_alert = (week['price'] > 125 or week['price'] < 75) or (month['price'] > 140 or month['price'] < 60)
+        conditions = volume_alert, price_alert
 
-        elif month['volume'][0] > 125 or month['price'] > 125 or month['price'] < 75:
-            alert = True
+        alert = True if any(conditions) else False
 
         return alert
 
