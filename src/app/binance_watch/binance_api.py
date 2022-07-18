@@ -5,9 +5,6 @@ from binance import Client
 from .config import api_key, secret_key
 
 
-client = Client(api_key(), secret_key())
-
-
 class Market:
     """Binance api"""
 
@@ -16,6 +13,7 @@ class Market:
         self._all_pairs = []  # all pairs in binance
         self._order_book = {}
         self._last_trades = pandas.DataFrame
+        self.client = Client(api_key(), secret_key(), {'timeout': 60})
 
     def get_ticker(self) -> dict:
         return self._ticker
@@ -45,10 +43,9 @@ class Market:
     def set_last_trades(self, trades: pandas.DataFrame):
         self._last_trades = trades
 
-    @staticmethod
-    def api_get_history(pair: str) -> pandas.DataFrame:
+    def api_get_history(self, pair: str) -> pandas.DataFrame:
         history_date = datetime.date.today() - datetime.timedelta(days=95)
-        market = client.get_historical_klines(pair, Client.KLINE_INTERVAL_1DAY,
+        market = self.client.get_historical_klines(pair, Client.KLINE_INTERVAL_1DAY,
                                               datetime.datetime.strftime(history_date, '%d %b, %Y'))
 
         for line in market:
@@ -59,27 +56,23 @@ class Market:
         result.set_index('open_time', inplace=True)
         return result
 
-    @staticmethod
-    def api_get_ticker(pair: str) -> dict:
-        result = client.get_ticker(symbol=pair)
+    def api_get_ticker(self, pair: str) -> dict:
+        result = self.client.get_ticker(symbol=pair)
         return result
 
-    @staticmethod
-    def api_get_order_book(pair: str) -> dict:
-        order_book = client.get_order_book(symbol=pair, limit=500)
+    def api_get_order_book(self, pair: str) -> dict:
+        order_book = self.client.get_order_book(symbol=pair, limit=500)
         bid_df = pandas.DataFrame(order_book['bids'], columns=['price', 'qty'])
         ask_df = pandas.DataFrame(order_book['asks'], columns=['price', 'qty'])
         result = {'bids': bid_df, 'asks': ask_df}
         return result
 
-    @staticmethod
-    def api_get_trades(pair: str) -> pandas.DataFrame:
-        market = client.get_recent_trades(symbol=pair)  # last 500 trades
+    def api_get_trades(self, pair: str) -> pandas.DataFrame:
+        market = self.client.get_recent_trades(symbol=pair)  # last 500 trades
         result = pandas.DataFrame(market, columns=['id', 'price', 'qty', 'quoteQty', 'time',
                                                    'isBuyerMaker', 'isBestMatch'])
         return result
 
-    @staticmethod
-    def api_get_all_pairs() -> list:
-        result = client.get_all_tickers()
+    def api_get_all_pairs(self) -> list:
+        result = self.client.get_all_tickers()
         return result

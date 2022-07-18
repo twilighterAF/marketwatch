@@ -1,5 +1,6 @@
 import os
 import time
+import requests
 from .binance_api import Market
 from .analysis import Analysis
 from .alerts import Alert
@@ -74,7 +75,10 @@ def binance_watch():
 
                 time.sleep(1)
 
+        except requests.exceptions.ReadTimeout:
+            logger.exception('Binance ReadTimeout')
+            time.sleep(5)
+
         except Exception as e:
             logger.exception(f'Event loop exception {e}')
-            time.sleep(1)
-            raise e
+            time.sleep(5)
