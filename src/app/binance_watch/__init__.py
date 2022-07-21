@@ -1,6 +1,5 @@
 import os
 import time
-import requests
 from .binance_api import Market
 from .analysis import Analysis
 from .alerts import Alert
@@ -9,7 +8,7 @@ from src.logger import get_logger
 
 
 CSV_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'historical_data')
-UPDATE_TIME = {'hour': 3, 'min': 30, 'sec': 10}  # 10 sec is enough for 4 pairs to update
+UPDATE_TIME = {'hour': 3, 'min': 30}
 market = Market()
 analytics = Analysis()
 alert = Alert()
@@ -67,18 +66,13 @@ def binance_watch():
                 event_loop(pair)
                 binance_time = time.localtime(float(market.get_ticker()['closeTime']) // nanosec)
                 time_conditions = (binance_time[3] == UPDATE_TIME['hour'],
-                                   binance_time[4] == UPDATE_TIME['min'],
-                                   binance_time[5] <= UPDATE_TIME['sec'])
+                                   binance_time[4] == UPDATE_TIME['min'])
 
                 if all(time_conditions):  # 03:30 a.m. daily update
                     daily_update(pair)
 
-                time.sleep(1)
+                time.sleep(15)
 
-        except requests.exceptions.ReadTimeout:
-            logger.exception('Binance ReadTimeout')
-            time.sleep(5)
-
-        except Exception as e:
-            logger.exception(f'Event loop exception {e}')
-            time.sleep(5)
+        except Exception:
+            logger.exception('Event loop exception')
+            raise

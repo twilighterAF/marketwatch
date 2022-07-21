@@ -33,7 +33,7 @@ class Alert:
         """Alerts config"""
         week, month = data[pair][7], data[pair][30]
 
-        volume_alert = week['volume'][0] > 140 or month['volume'][0] > 175
+        volume_alert = week['volume'][0] > 140 or month['volume'][0] > 200
         price_alert = (week['price'] > 125 or week['price'] < 75) or (month['price'] > 140 or month['price'] < 60)
         conditions = volume_alert, price_alert
 

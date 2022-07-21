@@ -49,9 +49,9 @@ class Support:
                 history = pandas.read_csv(file)
                 return history
 
-        except Exception as e:
+        except Exception:
             time.sleep(1)
-            raise e
+            raise
 
     @staticmethod
     def create_csv(pair: str, history: pandas.DataFrame, path: str):

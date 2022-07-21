@@ -37,9 +37,10 @@ def main_menu(message: types.Message):
 @bot.message_handler(content_types=['text'])
 def check_market(message: types.Message):
     logger.info('Check market')
+    pair = message.text.upper()
 
-    if message.text in support.get_pair_pool().keys():
-        report = report_output(send_report(message.text))
+    if pair in support.get_pair_pool().keys():
+        report = report_output(send_report(pair))
         bot.send_message(message.chat.id, report)
 
     else:
@@ -70,7 +71,7 @@ def alerting(message: types.Message):
 
             if alert_watch:
                 report = report_output(send_report(pair))
-                bot.send_message(message.chat.id, f'ALERT ❗️ \n{report}')
+                bot.send_message(message.chat.id, f'ALERT ❗️\n{report}')
 
             time.sleep(1)
     else:
@@ -80,15 +81,15 @@ def alerting(message: types.Message):
 @bot.message_handler(content_types=['text'])
 def add_pair(message: types.Message):
     logger.info('Add pair')
+    pair = message.text.upper()
 
-    if message.text in support.get_pair_pool().keys():
+    if pair in support.get_pair_pool().keys():
         bot.send_message(message.chat.id, 'Already have that pair')
 
-    elif message.text not in market.get_all_pairs():
+    elif pair not in market.get_all_pairs():
         bot.send_message(message.chat.id, 'Pair doesnt exist')
 
     else:
-        pair = message.text
         support.create_csv(pair, market.api_get_history(pair), CSV_DIR)
         alert.alert_off(pair)
         support.set_pair(pair)
@@ -98,18 +99,19 @@ def add_pair(message: types.Message):
 @bot.message_handler(content_types=['text'])
 def del_pair(message: types.Message):
     logger.info('Delete pair')
+    pair = message.text.upper()
 
-    if message.text not in support.get_pair_pool().keys():
+    if pair not in support.get_pair_pool().keys():
         bot.send_message(message.chat.id, 'Doesnt have that pair')
 
     elif len(support.get_pair_pool()) == 1:
         bot.send_message(message.chat.id, 'Cannot delete last pair')
 
     else:
-        support.del_pair(message.text)
-        alert.del_alert(message.text)
-        support.del_csv(message.text, CSV_DIR)
-        bot.send_message(message.chat.id, f'{message.text} deleted from MarketWatch')
+        support.del_pair(pair)
+        alert.del_alert(pair)
+        support.del_csv(pair, CSV_DIR)
+        bot.send_message(message.chat.id, f'{pair} deleted from MarketWatch')
 
 
 def add_main_keyboard() -> types.ReplyKeyboardMarkup:
@@ -136,7 +138,7 @@ def report_output(data: dict) -> str:
     trades = data[pair]['trades']
 
     result = f"REPORT {pair} \n" \
-        f"Current price - {report[7]['price_online']} \n" \
+        f"24h average price - {report[7]['price_online']} \n\n" \
         "7 DAYS\n" \
         f"volume from avg: {report[7]['volume'][0]}%\n" \
         f"volume from max: {report[7]['volume'][1]}%\n" \
@@ -144,12 +146,12 @@ def report_output(data: dict) -> str:
         "30 DAYS\n" \
         f"volume from avg: {report[30]['volume'][0]}%\n" \
         f"volume from max: {report[30]['volume'][1]}%\n" \
-        f"price from avg: {report[30]['price']}%\n" \
+        f"price from avg: {report[30]['price']}%\n\n" \
         "ORDER BOOK\n" \
         "Bids | Asks\n" \
         f"sum bid: {orders['bids']['sum']} | sum ask: {orders['asks']['sum']}\n" \
         f"max bid: {orders['bids']['max']} | max ask: {orders['asks']['max']}\n" \
-        f"avg bid: {orders['bids']['avg']} | avg ask: {orders['asks']['avg']}\n" \
+        f"avg bid: {orders['bids']['avg']} | avg ask: {orders['asks']['avg']}\n\n" \
         "LAST 500 TRADES\n" \
         f"max price: {trades['max_price']} | min price: {trades['min_price']}\n" \
         f"avg price: {trades['avg_price']} | price delta: {trades['price_delta']}\n" \
@@ -170,7 +172,7 @@ def bot_run():
         logger.info('Start bot')
         bot.infinity_polling(timeout=60)
 
-    except Exception as e:
-        logger.exception(f'Bot exception {e}')
-        raise e
+    except Exception:
+        logger.exception('Bot exception')
+        raise
 
